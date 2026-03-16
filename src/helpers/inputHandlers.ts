@@ -1,4 +1,4 @@
-import robot from 'robotjs'
+import robot from '@jitsi/robotjs'
 
 export function sendInputCommand(cmd: any) {
     console.log('sendInputCommand', cmd)
