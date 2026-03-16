@@ -35,15 +35,9 @@
             ],
             "category": "public.app-category.utilities",
             "icon": "assets/tray-icon.png",
-            "identity": "Joseph Adams (R2PY2DC3A4)",
-            "extendInfo": {
-                "NSApplicationSupportsSecureRestorableState": true,
-                "electronTeamId": "R2PY2DC3A4"
-            },
-            "hardenedRuntime": true,
-            "gatekeeperAssess": true,
-            "entitlements": "entitlements.mac.plist",
-            "entitlementsInherit": "entitlements.mac.plist"
+            "identity": null,
+            "hardenedRuntime": false,
+            "gatekeeperAssess": false
         },
         "win": {
             "target": "nsis",
