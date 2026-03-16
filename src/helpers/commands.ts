@@ -71,7 +71,9 @@ const systemCommands = {
             const cmd =
                 process.platform === 'win32'
                     ? ['shutdown', '/r', '/f', '/t', '0']
-                    : ['sudo', 'reboot']
+                    : process.platform === 'darwin'
+                      ? ['osascript', '-e', 'tell app "System Events" to restart']
+                      : ['sudo', 'reboot']
             await runSystemCommand(cmd, 'System is rebooting...')
             return `System will reboot now.`
         },
@@ -114,7 +116,9 @@ const systemCommands = {
             const cmd =
                 process.platform === 'win32'
                     ? ['shutdown', '/a']
-                    : ['sudo', 'shutdown', '-c']
+                    : process.platform === 'darwin'
+                      ? ['osascript', '-e', 'tell app "System Events" to cancel shutdown']
+                      : ['sudo', 'shutdown', '-c']
             await runSystemCommand(cmd, 'Shutdown cancelled.')
             return `Shutdown cancelled.`
         },

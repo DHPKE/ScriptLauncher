@@ -120,20 +120,31 @@ export function runSystemCommand(
 export function shutdownSystem(minutes: number, socket?: Socket) {
     const platform = process.platform
     const msg = `The system will shut down in ${minutes} minutes.`
-    const shutdownCmd =
-        platform === 'win32'
-            ? ['shutdown', '/s', '/f', '/t', (minutes * 60).toString()]
-            : ['sudo', 'shutdown', '-h', `+${minutes}`, msg]
 
-    if (platform !== 'win32') {
-        const notifyCmd =
-            platform === 'darwin'
-                ? [
-                      'osascript',
-                      '-e',
-                      `display notification "${msg}" with title "Shutdown Alert"`,
-                  ]
-                : ['notify-send', 'Shutdown Alert', msg]
+    let shutdownCmd: string[]
+    if (platform === 'win32') {
+        shutdownCmd = ['shutdown', '/s', '/f', '/t', (minutes * 60).toString()]
+    } else if (platform === 'darwin') {
+        // Use osascript — works without sudo, requires Accessibility permission
+        if (minutes <= 0) {
+            shutdownCmd = ['osascript', '-e', 'tell app "System Events" to shut down']
+        } else {
+            // Schedule via a background sleep + osascript
+            shutdownCmd = [
+                'bash', '-c',
+                `sleep ${minutes * 60} && osascript -e 'tell app "System Events" to shut down'`,
+            ]
+        }
+        // Show a notification too
+        const notifyCmd = [
+            'osascript',
+            '-e',
+            `display notification "${msg}" with title "Shutdown Alert"`,
+        ]
+        runSystemCommand(notifyCmd, msg, socket)
+    } else {
+        shutdownCmd = ['sudo', 'shutdown', '-h', `+${minutes}`, msg]
+        const notifyCmd = ['notify-send', 'Shutdown Alert', msg]
         runSystemCommand(notifyCmd, msg, socket)
     }
 
